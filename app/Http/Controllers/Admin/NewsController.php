@@ -17,4 +17,5 @@ class NewsController extends Controller
         // admin/news/createにリダイレクトする
         return redirect('admin/news/create');
     }
+
 }
