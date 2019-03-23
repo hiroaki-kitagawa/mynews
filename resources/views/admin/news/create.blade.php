@@ -1,24 +1,16 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MyNews</title>
-</head>
-<body>
-    <div class="content">
-    <h1>Myニュース作成画面</h1>
-        <form class="news_post">
-            <div class="form-group">
-                <label for="">タイトル</label>
-                <input class="form-control" type="text">
+{{-- layouts/admin.blade.phpを読み込む --}}
+@extends('layouts.admin')
+
+{{-- admin.blade.phpの@yeild('title')に'ニュースの新規作成'を埋め込む --}}
+@section('title', 'ニュースの新規作成')
+
+{{-- admin.blade.phpの@yeild('content')に以下のタグを埋め込む --}}
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <h2>ニュース新規作成</h2>
             </div>
-            <div class="form-group">
-                <label for="">内容</label>
-                <textarea class="form-control" type="text" name=""></textarea>
-            </div>
-        </form>
+        </div>
     </div>
-</body>
-</html>
+@endsection
