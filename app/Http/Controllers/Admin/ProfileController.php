@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+// Profile Modelを使えるようにする。書き忘れてエラーが出ていた！
 use App\Profile;
 
 class ProfileController extends Controller
