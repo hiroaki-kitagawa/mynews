@@ -27,15 +27,15 @@
                         <div class="col-md-10">
                         
                             <div class="form-check form-check-inline">
-                              <input class="form-check-input" type="radio" name="gender" value="gender1">
+                              <input class="form-check-input" type="radio" name="gender" value="male">
                               <label class="form-check-label">男性</label>
                             </div>
                             <div class="form-check form-check-inline">
-                              <input class="form-check-input" type="radio" name="gender" value="gender2">
+                              <input class="form-check-input" type="radio" name="gender" value="female">
                               <label class="form-check-label">女性</label>
                             </div>
                             <div class="form-check form-check-inline">
-                              <input class="form-check-input" type="radio" name="gender" value="gender3">
+                              <input class="form-check-input" type="radio" name="gender" value="others">
                               <label class="form-check-label">その他</label>
                             </div>
                         </div>
