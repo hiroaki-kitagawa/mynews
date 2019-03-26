@@ -1,13 +1,12 @@
 @extends('layouts.profile')
 @section('title', 'マイプロフィール')
 
-{{-- admin.blade.phpの@yeild('content')に以下のタグを埋め込む --}}
 @section('content')
     <div class="container">
         <div class="row">
             <div class="col-md-8 mx-auto">
-                <h2>プロフィール編集</h2>
-                <form action="{{ action('Admin\ProfileController@create') }}" method="post" enctyep="multipart/form-data">
+                <h2>プロフィール作成</h2>
+                <form action="{{ action('Admin\ProfileController@create') }}" method="post" enctype="multipart/form-data">
                     
                     @if (count($errors) > 0)
                         <ul>

@@ -1,24 +1,67 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MyEdit</title>
-</head>
-<body>
-    <div class="content">
-    <h1>プロファイル編集画面</h1>
-        <form class="profile_edit_post">
-            <div class="form-group">
-                <label for="">名前</label>
-                <input class="form-control" type="text">
+@extends('layouts.profile')
+@section('title', 'プロフィールの編集')
+
+@section('content')
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <h2>プロフィール編集</h2>
+                <form action="{{ action('Admin\ProfileController@update') }}" method="post" enctype="multipart/form-data">
+                    
+                    @if (count($errors) > 0)
+                        <ul>
+                            @foreach($errors->all() as $e)
+                                <li>{{ $e }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                    <div class="form-group row">
+                        <label class="col-md-2" for="name">氏名</label>
+                        
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="name" value="{{ $profile_form->name }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-2" for="gender">性別</label>
+                        <div class="col-md-10">
+                        
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="radio" name="gender" value="male" @if (old('gender', $profile_form->gender) == "male") checked @endif>
+                              <label class="form-check-label">男性</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="radio" name="gender" value="female" @if (old('gender', $profile_form->gender) == "female") checked @endif>
+                              <label class="form-check-label">女性</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="radio" name="gender" value="others" @if (old('gender', $profile_form->gender) == "others") checked @endif>
+                              <label class="form-check-label">その他</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-2" for="hobby">趣味</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="hobby" value="{{ $profile_form->hobby }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-md-2" for="introduction">自己紹介欄</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" name="introduction" rows="20">{{ $profile_form->introduction }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-10">
+                            <input type="hidden" name="id" value="{{ $profile_form->id }}">
+                            {{ csrf_field() }}
+                            <input type="submit" class="btn btn-primary btn-block" value="送信">
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="">メールアドレス</label>
-                <input class="form-control" type="email">
-            </div>
-        </form>
+        </div>
     </div>
-</body>
-</html>
+@endsection
