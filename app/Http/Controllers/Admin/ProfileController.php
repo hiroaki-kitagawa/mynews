@@ -7,6 +7,10 @@ use App\Http\Controllers\Controller;
 
 // Profile Modelを使えるようにする。書き忘れてエラーが出ていた！
 use App\Profile;
+use App\ProfileHistory;
+
+// 日付操作ライブラリ
+use Carbon\Carbon;
 
 class ProfileController extends Controller
 {
@@ -56,6 +60,12 @@ class ProfileController extends Controller
         unset($profile_form['_token']);
         // 該当するデータを上書きして保存する
         $profile->fill($profile_form)->save();
+        
+        // 編集履歴の記録と参照
+        $profile_history = new ProfileHistory;
+        $profile_history->profile_id = $profile->id;
+        $profile_history->edited_at = Carbon::now();
+        $profile_history->save();
         
         return redirect('admin/profile/edit' . '?id=' . $request->id);
     }

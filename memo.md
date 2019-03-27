@@ -75,3 +75,36 @@ Modelでデータを保存するが前に、フォームから送信されたデ
 
 ## PHP/Laravel 17 編集履歴を実装しよう
 ### 1.プロフィールの更新履歴を保存する仕組みを作る手順
+1. プロファイル編集履歴テーブルを作成する
+  `php artisan make:migration create_profile_histories_table`
+2. Migrationファイルを編集する
+  - id,profile_id,edited_atを定義する
+  - `php artisan migrate`
+3. ProfileHistory Modelを作成する
+  - `php artisan make:model ProfileHistory`
+  - idおよびprofile_id,edited_atの配列を定義する
+4. Profile Modelとの関連を定義する
+  ProfileモデルにhasManyで関連付けする  
+  ```
+  public function histories()
+    {
+      return $this->hasMany('App\ProfileHistory');
+
+    }  
+  ```
+
+5. 編集履歴の記録と参照
+  ProfileControllerのupdate Actionを編集する。  
+  ```
+  $history = new ProfileHistory;
+  $history->profile_id = $profile->id;
+  $history->edited_at = Carbon::now();
+  $history->save();
+  ```
+6. ProfileControllerの編集
+  - Profileモデルの使用を宣言 `use App\Profile` 追記
+  - 日付操作ライブラリ `use Carbon\Carbon;` 追記
+7. Profile編集画面で変更履歴を参照できるようadmin/profile/edit.blade.phpを編集する
+  
+8. 
+
