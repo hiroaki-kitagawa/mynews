@@ -35,6 +35,7 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         // Profile Modelからデータを取得する
+        // getで取得するため、URLにパラメータの指定が必要
         $profile = Profile::find($request->id);
         if (empty($profile)) {
             abort(404);
