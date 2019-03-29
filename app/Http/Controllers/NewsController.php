@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\HTML;
 
+use App\Profile;
 use App\News;
 
 class NewsController extends Controller
@@ -28,5 +29,15 @@ class NewsController extends Controller
         // news/index.blade.php ファイルを渡している
         // また View テンプレートに headline, posts, cond_title という変数を渡している
         return view('news.index', ['headline' => $headline, 'posts' => $posts, 'cond_title' => $cond_title]);
+    }
+    
+    public function profile(Request $request)
+    {
+        $profile = Profile::find($request->id);
+         if (empty($profile)) {
+            abort(404);
+        }
+        
+        return view('news.profile', ['profile' => $profile]);
     }
 }
