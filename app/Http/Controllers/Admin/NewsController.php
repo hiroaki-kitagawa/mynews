@@ -120,7 +120,7 @@ class NewsController extends Controller
         $s3client = S3Client::factory([
             'credentials' => [
                 'key' => env('AWS_ACCESS_KEY_ID'),
-                    'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
             ],
             'region' => 'us-east-2',
             'version' => 'latest',
