@@ -3,6 +3,7 @@
 @section('content')
     <div class="container">
         <h1>PHP/Laravelコース - Herokuへのデプロイ</h1>
+        <p>課題：追加開発</p>
         <hr color="#c0c0c0">
         @if (!is_null($headline))
             <div class="row">
