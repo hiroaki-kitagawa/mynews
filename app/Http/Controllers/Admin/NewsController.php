@@ -122,7 +122,7 @@ class NewsController extends Controller
                 'key' => env('AWS_ACCESS_KEY_ID'),
                 'secret' => env('AWS_SECRET_ACCESS_KEY'),
             ],
-            'region' => 'us-east-2',
+            'region' => 'ap-northeast-1',
             'version' => 'latest',
         ]);
         // パケット名を指定
