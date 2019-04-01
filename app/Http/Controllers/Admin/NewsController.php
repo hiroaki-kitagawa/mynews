@@ -142,7 +142,7 @@ class NewsController extends Controller
         // 読み取り専用のパスを返す
         $path = $result['ObjectURL'];
         
-        // パスをDBに保村（ここの詳細処理は今回は記述しません）
+        // パスをDBに保存（ここの詳細処理は今回は記述しません）
         $this->userRepository->updateUserProfsById($id, 'img_path', $path);
     }
 }
