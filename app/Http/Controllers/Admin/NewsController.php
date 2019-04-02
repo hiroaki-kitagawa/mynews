@@ -32,7 +32,7 @@ class NewsController extends Controller
             $news->image_path = null;
         }
         
-        upload($form, $form->id);
+        $this->upload($request, $request->id);
         
         // フォームから送信されてきた_tokenを削除する
         unset($form['_token']);
