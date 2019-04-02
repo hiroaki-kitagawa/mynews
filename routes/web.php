@@ -18,12 +18,14 @@ Route::get('/', function () {
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {
     Route::get('news/create', 'Admin\NewsController@add');
     Route::post('news/create', 'Admin\NewsController@create');
-    Route::get('news', 'Admin\NewsController@index');
+    // Route::post('news/create', 'Admin\NewsController@upload');
+    Route::post('news/edit', 'Admin\NewsController@upload');
+    Route::get('/', 'NewsController@upload');
     Route::get('news/edit', 'Admin\NewsController@edit');
     Route::post('news/edit', 'Admin\NewsController@update');
     Route::get('news/delete', 'Admin\NewsController@delete');
+
     
-    Route::post('')
     // 課題18 プロフィール情報を表示
     Route::get('profile', 'NewsController@profile');
     // 課題4
@@ -38,3 +40,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/', 'NewsController@index');
+

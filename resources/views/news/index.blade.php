@@ -13,6 +13,7 @@
                             <div class="caption mx-auto">
                                 <div class="image">
                                     @if ($headline->image_path)
+                                        <!--<img src="{{ secure_asset('storage/image/' . $headline->image_path) }}">-->
                                         <img src="{{ secure_asset('storage/image/' . $headline->image_path) }}">
                                     @endif
                                 </div>
