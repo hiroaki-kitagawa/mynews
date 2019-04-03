@@ -26,13 +26,13 @@ class NewsController extends Controller
         
         // formに画像があれば、保存する
         if (isset($form['image'])) {
-            $path = $request->file('image')->store('public/image');
+            // $path = $request->file('image')->store('public/image');
+            // 画像の保存先をS3に保存するupload()に変更
+            $path = $request->file('image')->upload('public/image');
             $news->image_path = basename($path);
         } else {
             $news->image_path = null;
         }
-        
-        $this->upload($request, $request->id);
         
         // フォームから送信されてきた_tokenを削除する
         unset($form['_token']);
