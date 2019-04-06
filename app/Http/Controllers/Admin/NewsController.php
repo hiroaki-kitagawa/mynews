@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use App\News;
 use App\History;
+use App\Profile;
 
 // 日付操作ライブラリ
 use Carbon\Carbon;
@@ -24,15 +25,23 @@ class NewsController extends Controller
         $news = new News;
         $form = $request->all();
         
+        // Profile Modelからデータを取得する
+        $profile = Profile::find($request->id);
+        var_dump($request);die;
+        
         // formに画像があれば、保存する
         if (isset($form['image'])) {
-            // $path = $request->file('image')->store('public/image');
-            // 画像の保存先をS3に保存するupload()に変更
-            $path = $request->file('image')->upload('public/image');
+            $path = $request->file('image')->store('public/image');
+            
+            // S3にアップロードする画像のファイルパスを取得
+            // $path = $this->upload($request, $profile);
+            var_dump($path);
+            
             $news->image_path = basename($path);
         } else {
             $news->image_path = null;
         }
+        
         
         // フォームから送信されてきた_tokenを削除する
         unset($form['_token']);
@@ -80,7 +89,9 @@ class NewsController extends Controller
         if ($request->remove == 'true') {
             $news_form['image_path'] = null;
         } elseif ($request->file('image')) {
+            
             $path = $request->file('image')->store('public/image');
+            
             $news_form['image_path'] = basename($path);
         } else {
             $news_form['image_path'] = $news->image_path;
@@ -109,6 +120,7 @@ class NewsController extends Controller
         return redirect('admin/news/');
     }
     
+    // S3に画像をアップロード
     public function upload(Request $request, int $id)
     {
         $ext = substr($filename, strrpos($_FILES['img_path']['name'], '.') + 1);
@@ -149,4 +161,5 @@ class NewsController extends Controller
         // パスをDBに保存（ここの詳細処理は今回は記述しません）
         $this->userRepository->updateUserProfsById($id, 'img_path', $path);
     }
+    
 }
