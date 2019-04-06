@@ -42,6 +42,8 @@ return [
     */
 
     'disks' => [
+        'default' => 'local',
+        'cloud' => 's3',
 
         'local' => [
             'driver' => 'local',

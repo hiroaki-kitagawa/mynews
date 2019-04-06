@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 use App\News;
 use App\History;
@@ -114,47 +115,61 @@ class NewsController extends Controller
     // S3に画像をアップロード
     public function upload(Request $request, int $id)
     {
+        $this->validate($request, ['myfile' => 'required|image']);
+
+        $image = $request->file('myfile');
         
-        $ext = substr($_FILES['image']["name"], strrpos($_FILES['image']['name'], '.') + 1);
-        if(strtolower($ext) !== 'png' && strtolower($ext) !== 'jpg' && strtolower($ext) !== 'gif'){
-            echo '画像以外のファイルが指定されています。画像ファイル(png/jpg/jpeg/gif)を指定してください';
-            exit();
-        }
-        // var_dump($ext);die;
         // 読み込みの際のキーとなるS3上のファイルパスを作る(作り方は色々あると思います)
         $tmpname = str_replace('/tmp/', '', $_FILES['image']['tmp_name']);
-        $new_filename = 'profiles/'.$id.'-'.time().'-'.$tmpname.'.'.$ext;
+        
+        
+        /* 名前を付与してS3に保存する */
+        $filename = 'profiles/'.$id.'-'.time().'-'.$tmpname.'.'.$ext;
+        $path = Storage::disk('s3')->putFileAs('myprefix', $image, $filename, 'public');
+        
+        // $ext = substr($_FILES['image']["name"], strrpos($_FILES['image']['name'], '.') + 1);
+        // if(strtolower($ext) !== 'png' && strtolower($ext) !== 'jpg' && strtolower($ext) !== 'gif'){
+        //     echo '画像以外のファイルが指定されています。画像ファイル(png/jpg/jpeg/gif)を指定してください';
+        //     exit();
+        // }
+        // var_dump($ext);die;
+        
         
         // var_dump($tmpname, $new_filename);die;
-        $s3client = S3Client::factory([
-            'credentials' => [
-                'key' => env('AWS_ACCESS_KEY_ID'),
-                'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            ],
-            'region' => 'ap-northeast-1',
-            'version' => 'latest',
-        ]);
+        // $s3client = S3Client::factory([
+        //     'credentials' => [
+        //         'key' => env('AWS_ACCESS_KEY_ID'),
+        //         'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        //     ],
+        //     'region' => 'ap-northeast-1',
+        //     'version' => 'latest',
+        // ]);
+        
+        
         
         
         // パケット名を指定
-        $bucket = getenv('S3_BUCKET_NAME')?: die('No "S3_BUCKET_NAME" config var in found in env!');
+        // $bucket = getenv('S3_BUCKET_NAME')?: die('No "S3_BUCKET_NAME" config var in found in env!');
         // アップロードするファイルを用意
-        $image = fopen($_FILES['image']['tmp_name'],'rb');
+        // $image = fopen($_FILES['image']['tmp_name'],'rb');
         
         // 画像のアップロード（各項目の説明は後述）
-        $result = $s3client->putObject([
-            'ACL' => 'public-read',
-            'Bucket' => $bucket,
-            'Key' => $new_filename,
-            'Body' => $iamge,
-            'ContentType' => mime_content_type($_FILES['image']['tmp_name']),
-        ]);
+        // $result = $s3client->putObject([
+        //     'ACL' => 'public-read',
+        //     'Bucket' => $bucket,
+        //     'Key' => $new_filename,
+        //     'Body' => $iamge,
+        //     'ContentType' => mime_content_type($_FILES['image']['tmp_name']),
+        // ]);
         
         // 読み取り専用のパスを返す
-        $path = $result['ObjectURL'];
+        // $path = $result['ObjectURL'];
+        
+         /* ファイルパスから参照するURLを生成する */
+        $url = Storage::disk('s3')->url($path);
         
         // パスをDBに保存（ここの詳細処理は今回は記述しません）
-        $this->userRepository->updateUserProfsById($id, 'image', $path);
+        // $this->userRepository->updateUserProfsById($id, 'image', $path);
     }
     
 }
