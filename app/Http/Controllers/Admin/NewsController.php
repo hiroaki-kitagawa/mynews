@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 
 use App\News;
 use App\History;
-use App\Profile;
 
 // 日付操作ライブラリ
 use Carbon\Carbon;
@@ -25,23 +24,15 @@ class NewsController extends Controller
         $news = new News;
         $form = $request->all();
         
-        // Profile Modelからデータを取得する
-        $profile = Profile::find($request->id);
-        var_dump($request);die;
-        
         // formに画像があれば、保存する
         if (isset($form['image'])) {
-            $path = $request->file('image')->store('public/image');
-            
+            // $path = $request->file('image')->store('public/image');
             // S3にアップロードする画像のファイルパスを取得
-            // $path = $this->upload($request, $profile);
-            var_dump($path);
-            
+            $path = $this->upload($request, $request->user()->id);
             $news->image_path = basename($path);
         } else {
             $news->image_path = null;
         }
-        
         
         // フォームから送信されてきた_tokenを削除する
         unset($form['_token']);
@@ -123,16 +114,18 @@ class NewsController extends Controller
     // S3に画像をアップロード
     public function upload(Request $request, int $id)
     {
-        $ext = substr($filename, strrpos($_FILES['img_path']['name'], '.') + 1);
+        
+        $ext = substr($_FILES['image']["name"], strrpos($_FILES['image']['name'], '.') + 1);
         if(strtolower($ext) !== 'png' && strtolower($ext) !== 'jpg' && strtolower($ext) !== 'gif'){
             echo '画像以外のファイルが指定されています。画像ファイル(png/jpg/jpeg/gif)を指定してください';
             exit();
         }
-        
+        // var_dump($ext);die;
         // 読み込みの際のキーとなるS3上のファイルパスを作る(作り方は色々あると思います)
-        $tmpname = str_replace('/tmp/', '', $_FILES['img_path']['tmp_name']);
+        $tmpname = str_replace('/tmp/', '', $_FILES['image']['tmp_name']);
         $new_filename = 'profiles/'.$id.'-'.time().'-'.$tmpname.'.'.$ext;
         
+        // var_dump($tmpname, $new_filename);die;
         $s3client = S3Client::factory([
             'credentials' => [
                 'key' => env('AWS_ACCESS_KEY_ID'),
@@ -141,10 +134,12 @@ class NewsController extends Controller
             'region' => 'ap-northeast-1',
             'version' => 'latest',
         ]);
+        
+        
         // パケット名を指定
         $bucket = getenv('S3_BUCKET_NAME')?: die('No "S3_BUCKET_NAME" config var in found in env!');
         // アップロードするファイルを用意
-        $image = fopen($_FILES['img_path']['tmp_name'],'rb');
+        $image = fopen($_FILES['image']['tmp_name'],'rb');
         
         // 画像のアップロード（各項目の説明は後述）
         $result = $s3client->putObject([
@@ -152,14 +147,14 @@ class NewsController extends Controller
             'Bucket' => $bucket,
             'Key' => $new_filename,
             'Body' => $iamge,
-            'ContentType' => mime_content_type($_FILES['img_path']['tmp_name']),
+            'ContentType' => mime_content_type($_FILES['image']['tmp_name']),
         ]);
         
         // 読み取り専用のパスを返す
         $path = $result['ObjectURL'];
         
         // パスをDBに保存（ここの詳細処理は今回は記述しません）
-        $this->userRepository->updateUserProfsById($id, 'img_path', $path);
+        $this->userRepository->updateUserProfsById($id, 'image', $path);
     }
     
 }
