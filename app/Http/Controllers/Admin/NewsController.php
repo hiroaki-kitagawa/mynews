@@ -29,7 +29,7 @@ class NewsController extends Controller
         if (isset($form['image'])) {
             // $path = $request->file('image')->store('public/image');
             // S3にアップロードする画像のファイルパスを取得
-            $path = $this->upload($request, $request->user()->id);
+            $path = $this->store($request, $request->user()->id);
             $news->image_path = basename($path);
         } else {
             $news->image_path = null;
@@ -83,8 +83,8 @@ class NewsController extends Controller
         } elseif ($request->file('image')) {
             
             // $path = $request->file('image')->store('public/image');
-            
-            $path = $this->upload($request, $request->user()->id);
+            // s3にアップロード
+            $path = $this->store($request, $request->user()->id);
             
             $news_form['image_path'] = basename($path);
         } else {
@@ -115,7 +115,7 @@ class NewsController extends Controller
     }
     
     // S3に画像をアップロード
-    public function upload(Request $request, int $id)
+    public function store(Request $request, int $id)
     {
         $this->validate($request, ['image' => 'required|image']);
 
@@ -133,13 +133,14 @@ class NewsController extends Controller
         /* 名前を付与してS3に保存する */
         $filename = $request->file('image')->getClientOriginalName();
         $filename = $id . '-' . $filename;
-        $path = Storage::disk('s3')->putFileAs('/'. $id, $image, $filename, 'public');
+        $path = Storage::disk('s3')->putFileAs('/', $image, $filename, 'public');
 
         /* ファイルパスから参照するURLを生成する */
         $url = Storage::disk('s3')->url($path);
 
         // return redirect()->back()->with('s3url', $url);
     }
+    
     // public function upload(Request $request, int $id)
     // {
     //     // formから送信されたimgファイルを読み込む
