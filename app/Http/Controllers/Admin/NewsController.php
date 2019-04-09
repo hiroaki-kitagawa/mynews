@@ -26,14 +26,20 @@ class NewsController extends Controller
         $form = $request->all();
         
         // formに画像があれば、保存する
-        if (isset($form['image'])) {
-            // $path = $request->file('image')->store('public/image');
-            // S3にアップロードする画像のファイルパスを取得
-            $path = $this->store($request, $request->user()->id);
-            $news->image_path = basename($path);
-        } else {
-            $news->image_path = null;
-        }
+        // if (isset($form['image'])) {
+        //     // $path = $request->file('image')->store('public/image');
+        //     // S3にアップロードする画像のファイルパスを取得
+        //     $path = $this->store($request, $request->user()->id);
+        //     $news->image_path = basename($path);
+        // } else {
+        //     $news->image_path = null;
+        // }
+        
+        //s3アップロード
+        $image = $request->file('image');
+        $path = Storage::disk('s3')->putFile('upload', $image, 'public');
+        $news->image_path = Storage::disk('s3')->url($path);
+        //
         
         // フォームから送信されてきた_tokenを削除する
         unset($form['_token']);
@@ -83,8 +89,10 @@ class NewsController extends Controller
         } elseif ($request->file('image')) {
             
             // $path = $request->file('image')->store('public/image');
-            // s3にアップロード
-            $path = $this->store($request, $request->user()->id);
+             //s3アップロード
+            $image = $request->file('image');
+            $path = Storage::disk('s3')->putFile('upload', $image, 'public');
+            $news->image_path = Storage::disk('s3')->url($path);
             
             $news_form['image_path'] = basename($path);
         } else {
@@ -113,51 +121,5 @@ class NewsController extends Controller
         $news->delete();
         return redirect('admin/news/');
     }
-    
-    // S3に画像をアップロード
-    public function store(Request $request, int $id)
-    {
-        $this->validate($request, ['image' => 'required|image']);
-
-        $image = $request->file('image');
-
-        /**
-         * 自動生成されたファイル名が付与されてS3に保存される。
-         * 第三引数に'public'を付与しないと外部からアクセスできないので注意。
-         */
-        // $path = Storage::disk('s3')->putFile('/', $image, 'public');
-
-        /* 上記と同じ */
-        // $path = $image->store('myprefix', 's3');
-
-        /* 名前を付与してS3に保存する */
-        $filename = $request->file('image')->getClientOriginalName();
-        $filename = $id . '-' . $filename;
-        $path = Storage::disk('s3')->putFileAs('/', $image, $filename, 'public');
-
-        /* ファイルパスから参照するURLを生成する */
-        $url = Storage::disk('s3')->url($path);
-
-        // return redirect()->back()->with('s3url', $url);
-    }
-    
-    // public function upload(Request $request, int $id)
-    // {
-    //     // formから送信されたimgファイルを読み込む
-    //     $file = $request->file('image');
-    //     $filename = $request->file('image')->getClientOriginalName();
-        
-    //     // 画像の名前を取得
-    //     $path = $request->file('image')->storeAs('public', $filename);
-        
-        
-    //     // var_dump($filename);die;
-    //     // s3のuploadsファイルに追加
-    //     Storage::disk('s3')->put('/', $file, 'public');
-    //     // 画像のURLを参照
-    //     $url = Storage::disk('s3')->url($filename);
-        
-        
-    // }
     
 }
